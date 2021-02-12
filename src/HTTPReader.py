@@ -15,6 +15,7 @@ read() method of the response to return the contents of the webpage.
 
 """
 import http.client
+import sys
 
 
 def make_connection(url):
@@ -26,18 +27,19 @@ def make_connection(url):
     returns:
         HTTP connection object
     """
-    conn = http.client.HTTPSConnection(url)
-    conn.connect()
-    return conn
+    c = http.client.HTTPSConnection(url)
+    c.connect()
+    return c
 
 
-def read_lines(conn, lines):
+def read_lines(conn, lines, mode):
     """
     Read <lines> lines from HTTP connection <conn>.
 
     inputs:
         conn(obj): HTTP connection
         lines(int): number of lines to read
+        mode(int): 0 for read, 1 for readlines
     returns:
         None
     """
@@ -50,7 +52,10 @@ def read_lines(conn, lines):
         for i in range(lines):
             # using readline here instead of read() so that newline
             # characters are recognized
-            response_line = response.readline()
+            if mode == 0:
+                response_line = response.read()
+            else:
+                response_line = response.readline()
             print("line %s=%s" % (i, response_line))
     finally:
         # close the connection
@@ -60,6 +65,15 @@ def read_lines(conn, lines):
 if __name__ == '__main__':
     url = "www.uci.edu"  # URL string
     lines = 20  # number of lines to read
-    print("reading HTTP data from web site %s ..." % url)
+
+    # runtime mode
+    if len(sys.argv) > 1 and sys.argv[1] in ['0', '1']:
+        mode = int(sys.argv[1])  # mode, 0 for read(), 1 for readlines()
+    else:
+        mode = 0  # default is read()
+
+    print("reading HTTP data from web site %s "
+          "(%sparsing on newline characters)..." %
+          (url, ["NOT ", ""][mode]))
     conn = make_connection(url)
-    read_lines(conn, lines)
+    read_lines(conn, lines, mode)
