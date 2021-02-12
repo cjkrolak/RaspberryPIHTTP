@@ -26,10 +26,7 @@ def make_connection(url):
     returns:
         HTTP connection object
     """
-
-    # conn = http.client.HTTPConnection(url)
     conn = http.client.HTTPSConnection(url)
-    # print("conn=" + str(conn))
     conn.connect()
     return conn
 
@@ -53,8 +50,7 @@ def read_lines(conn, lines):
         for i in range(lines):
             # using readline here instead of read() so that newline
             # characters are recognized
-            # response_line = response.readline()
-            response_line = response.read()
+            response_line = response.readline()
             print("line %s=%s" % (i, response_line))
     finally:
         # close the connection
@@ -63,7 +59,7 @@ def read_lines(conn, lines):
 
 if __name__ == '__main__':
     url = "www.uci.edu"  # URL string
-    lines = 10  # number of lines to read
+    lines = 20  # number of lines to read
     print("reading HTTP data from web site %s ..." % url)
     conn = make_connection(url)
     read_lines(conn, lines)
